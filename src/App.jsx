@@ -1,10 +1,16 @@
 import { useEffect, useState } from "react";
 import TaskForm from "./components/TaskForm";
+import Tasks from "./pages/Tasks";
 
 function App() {
   const [tasks, setTasks] = useState(() => {
     const oldTasks = localStorage.getItem("tasks");
-    return oldTasks ? JSON.parse(oldTasks) : [];
+
+    if (!oldTasks) return [];
+
+    const parsedTasks = JSON.parse(oldTasks);
+
+    return Array.isArray(parsedTasks) ? parsedTasks : [];
   });
   const addTasks = (task) => {
     setTasks((prev) => [...prev, task]);
@@ -15,13 +21,18 @@ function App() {
   // const editTask = (editItem,id) => {
   //   setTasks((item)=> item.id == id ? {editItem} : item)
   // };
-  // const deleteTask = (id) =>{
-  //   setTasks(item => item.id != id)
-  // }
+  const deleteTask = (id) => {
+    console.log(id, "iddddd");
+    setTasks((prev) => prev.filter((item) => item.id !== id));
+  };
+
+  const toggleTask = (id) => {
+    setTasks((prev) => prev.map((item) => (item.id == id ? { ...item, completed: !item.completed } : item)));
+  };
   return (
-    <div class="h-full w-full bg-green-300 flex items-center jsutify-center">
-      <h1>expense tracker</h1>
+    <div className="h-full w-full bg-green-200 flex flex-col items-center jsutify-center">
       <TaskForm addTasks={addTasks} />
+      <Tasks tasks={tasks} deleteTask={deleteTask} />
     </div>
   );
 }
